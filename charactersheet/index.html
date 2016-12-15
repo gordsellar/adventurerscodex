@@ -1,14 +1,431 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <script type="text/javascript">
-      //Check immediately. Skip loading page if necessary.
-      "use strict";
-      window.location = '/charactersheet';
-    </script>
- </head>
- <body>
- </body>
+<html id='html'>
+<head>
+  <!-- ko with: childRootViewModel -->
+	<title data-bind='text: pageTitle'></title>
+	<!-- /ko -->
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<link rel="apple-touch-icon" href="/images/logo-full-icon.png">
+	<link rel="icon" type="image/png" href="/images/logo-full.png">
+  <link rel="stylesheet" href="/bower_components/jquery-ui/themes/smoothness/jquery-ui.css">
+	<link href="/bower_components/bootstrap-theme-bootswatch-flatly/css/bootstrap.css" rel="stylesheet">
+  <link href="/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+	<link href="/bower_components/knockout-file-bindings/knockout-file-bindings.css" rel="stylesheet">
+  <link href="/bower_components/select2/select2.css" rel="stylesheet">
+  <link href="/bin/select2-bootstrap-flatly.css" rel="stylesheet">
+	<link href="/site.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=IM+Fell+English+SC" rel="stylesheet">
+
+</head>
+<body data-bind="event: {keypress: HotkeysService.hotkeyHandler}">
+<div id="content">
+<nav class="navbar navbar-default navbar-static-top">
+<div class="container-fluid">
+  <div class="col-lg-10 col-xs-12 col-lg-offset-1">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+        data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span>
+        <span class="icon-bar"></span><span class="icon-bar"></span>
+      </button>
+      <a href='//adventurerscodex.com' class="navbar-brand">
+    	  <img src="/images/logo-full-circle-small.png"
+    	    class="pull-left img-rounded inline-block brand-icon"
+    	    alt="Adventurer's Codex"/>
+        <span class="inline-block pull-right">Adventurer's Codex
+      </a>
+    </div>
+    <div id="navbar" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="//adventurerscodex.com/blog">Blog</a></li>
+        <li><a href="//tinyletter.com/adventurerscodex">Newsletter</a></li>
+      </ul>
+    </div>
+  <!--/.nav-collapse -->
+  </div>
+</div>
+</nav>
+<!-- ko if: ready -->
+<div class="container-fluid main">
+  <div class="col-lg-10 col-xs-12 col-lg-offset-1">
+  <div id="characters" class="container-fluid characters-module-style">
+    <div class="row">
+      <div class="col-sm-8">
+        <div class="row">
+          <!-- ko with: childRootViewModel -->
+          <div class="col-padded col-xs-2" data-bind="template: {
+            name: 'player_image.tmpl',
+            templateUrl: 'templates/common',
+            data: playerImageViewModel
+          }"></div>
+          <!-- /ko -->
+          <div class="col-padded col-xs-10 characters-player-name">
+            <!-- ko with: childRootViewModel -->
+            <!-- ko if: playerType().key == 'character' -->
+            <!-- ko with: profileTabViewModel().profileViewModel -->
+            <div class="row">
+              <div class="col-md-12">
+                <div class="h3" data-bind="contenteditable: {
+                  text: characterName,
+                  placeholder: placeholderText
+                }"></div>
+              </div>
+            </div>
+            <!-- /ko -->
+            <!-- /ko -->
+            <!-- /ko -->
+            <!-- ko with: childRootViewModel -->
+            <!-- ko if: playerType().key == 'dm' -->
+            <!-- ko with: campaignTabViewModel().campaignOverviewViewModel -->
+            <div class="row">
+              <div class="col-md-12">
+                <div class="h3" data-bind="contenteditable: {
+                  text: name,
+                  placeholder: placeholderText
+                }"></div>
+              </div>
+            </div>
+            <!-- /ko -->
+            <!-- /ko -->
+            <!-- /ko -->
+            <div class="row">
+              <div class="col-md-12">
+                <i class="small underline"><a class="" data-toggle="modal"
+                  data-target="#newModal" href="#">New</a></i>
+                &nbsp;
+                <i class="small underline"><a class="" data-toggle="modal"
+                  data-target="#charactersModal" href="#">Characters and Games</a></i>
+                &nbsp;
+                <i class="small underline"><a class="" data-toggle="modal"
+                  data-target="#exportModal"
+                  data-bind="click: charactersViewModel.selectCharacter"
+                  href="#">Export</a></i>
+              </div>
+            </div>
+            <!-- ko with: childRootViewModel -->
+            <!-- ko if: playerType().key == 'character' -->
+            <div class="row row-padded">
+              <div class="col-xs-12">
+                <div data-bind="template: {
+                  name: 'status_line.tmpl',
+                  templateUrl: 'templates/character',
+                  data: statusLineViewModel
+                 }"></div>
+              </div>
+            </div>
+            <!-- /ko -->
+            <!-- /ko -->
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4" data-bind="template: {
+        name: 'user_notifications.tmpl',
+        templateUrl: 'templates/common',
+        data: userNotificationViewModel
+      }">
+      </div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <!-- ko with: childRootViewModel -->
+		<div data-bind="template: {
+		    data: $data,
+		    name: TEMPLATE_FILE,
+		    templateUrl: 'templates'
+			}"></div>
+      <!-- /ko -->
+	</div>
+</div>
+<!-- /ko -->
+<!-- ko ifnot: ready -->
+<div id="wizard" class="container-fluid main"
+  data-bind="with: wizardViewModel">
+  <div data-bind="template: {
+    name: 'wizard.tmpl',
+    templateUrl: 'templates/common',
+    data: $data }"></div>
+</div>
+<!-- /ko -->
+</div>
+
+<!-- Footer -->
+<div class="container-fluid footer">
+  <div class="col-lg-10 col-lg-offset-1">
+    <ul class="footer-icons" style="padding:0px;">
+      <li>
+        <a href="//twitter.com/adventurercodex">
+          <i class="fa fa-twitter social-media" aria-hidden="true"></i>
+        </a>
+      </li>
+      <li>
+        <a href="//github.com/adventurerscodex">
+          <i class="fa fa-github social-media" aria-hidden="true"></i>
+        </a>
+      </li>
+      <li>
+        <a href="/feed.xml">
+          <i class="fa fa-rss social-media" aria-hidden="true"></i>
+        </a>
+      </li>
+    </ul>
+    <center>
+      <p class="text-muted">&copy; 2016 Adventurer's Codex, LLC. All rights reserved. &#32;&#32;&#124;&#32;
+        <a href="//adventurerscodex.com/contact.html">Contact Us</a>
+      </p>
+      <p class="text-muted">
+        Autofilled data is distributed under the
+          <a href='http://media.wizards.com/2016/downloads/DND/SRD-OGL_V5.1.pdf'
+            target='_blank'>
+            OGL</a><br/>
+            Open	Game	License	v	1.0a	Copyright	2000,	Wizards	of	the	Coast,	LLC.
+      </p>
+    </center>
+  </div>
+</div>
+
+<!-- Switch Characters Modal -->
+<div class="modal fade" id="charactersModal" tabindex="-1" role="dialog"
+  aria-labelledby="charactersModalLabel"
+  data-bind="template: {
+      name: 'characters.tmpl',
+      templateUrl: 'templates/common',
+      data: charactersViewModel }">
+</div>
+
+<!-- Export Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1" role="dialog"
+  data-bind="with: charactersViewModel.selectedCharacter"
+  aria-labelledby="exportModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content container-fluid">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="exportModalLabel" data-dismiss="modal">Export</h4>
+      </div>
+      <div class="modal-body">
+        <p>Save your character or campaign to a file for easy access in the future! Put it in Dropbox for added convenience.</p>
+        <p>Note: Safari users will need to save the contents of the page.</p>
+      <!-- Add export form. -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bind="click: saveToFile" data-dismiss="modal">Export</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- New Modal -->
+<div class="modal fade" id="newModal" tabindex="-1" role="dialog"
+  aria-labelledby="newLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content container-fluid">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"
+          aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="settingsLabel"
+          data-dismiss="modal">Create a new character or campaign</h4>
+      </div>
+      <div class="modal-body">
+        <p>If you play more than one character,
+					run multiple campaigns, or do a little of both, you're
+					in luck! Create a new character or campaign and then use
+					the "Characters and Games" menu to switch between them.</p>
+      </div>
+      <div class="modal-footer">
+        <button data-bind="click: showWizard"
+          data-dismiss="modal" type="submit"
+          class="btn btn-primary">Get started!
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="3j1z94debj5xcwn"></script>
+<script src="/bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
+<script src="/bower_components/jquery-ui/jquery-ui.min.js"></script>
+<script src="/bower_components/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="/bower_components/knockout/dist/knockout.js" type="text/javascript"></script>
+<script src="/bower_components/file-saver.js/FileSaver.js" type="text/javascript"></script>
+<script src="/bower_components/node-uuid/uuid.js" type="text/javascript"></script>
+<script src="/bower_components/js-signals/dist/signals.min.js" type="text/javascript"></script>
+<script src="/bower_components/knockout-file-bindings/knockout-file-bindings.js" type="text/javascript"></script>
+<script src="/bower_components/blueimp-md5/js/md5.min.js" type="text/javascript"></script>
+<script src="/bower_components/select2/select2.min.js"></script>
+<script src="/bower_components/jquery.textarea-markdown-editor/dist/marked.min.js"></script>
+<script src="/bower_components/jquery.textarea-markdown-editor/dist/jquery.textarea-markdown-editor.js"></script>
+<!-- Bindings -->
+<script src="/bin/date-format.js"></script>
+<script src="/bin/markdown.min.js"></script>
+<script src="/bin/knockout-file-bind.js" type="text/javascript"></script>
+<script src="/bin/koExternalTemplateEngine_all.min.js" type="text/javascript"></script>
+<script src="/bin/knockout.mapping.js" type="text/javascript"></script>
+<script src="/bin/tooltip_bind.js" type="text/javascript"></script>
+<script src="/bin/select2.js" type="text/javascript"></script>
+<script src="/bin/knockout-jquery-autocomplete.js" type="text/javascript"></script>
+<script src="/bin/knockout-binding-contenteditable.js" type="text/javascript"></script>
+<script src="/bin/knockout-boostrap-collapse.js" type="text/javascript"></script>
+<script src="/bin/knockout-bootstrap-modal.js" type="text/javascript"></script>
+<script src="/bin/knockout-mapping-autoignore.js" type="text/javascript"></script>
+<script src="/bin/knockout-markdown.js" type="text/javascript"></script>
+<!-- Extenders -->
+<script src="/bin/knockout-required-extender.js" type="text/javascript"></script>
+<!-- ViewModels -->
+<script src="viewmodels/character/ability_scores.js" type="text/javascript"></script>
+<script src="viewmodels/character/actions_toolbar.js" type="text/javascript"></script>
+<script src="viewmodels/character/appearance.js" type="text/javascript"></script>
+<script src="viewmodels/character/armor.js" type="text/javascript"></script>
+<script src="viewmodels/character/character_root.js" type="text/javascript"></script>
+<script src="viewmodels/character/daily_features.js" type="text/javascript"></script>
+<script src="viewmodels/character/equipment_tab.js" type="text/javascript"></script>
+<script src="viewmodels/character/feat_traits.js" type="text/javascript"></script>
+<script src="viewmodels/character/feats_prof.js" type="text/javascript"></script>
+<script src="viewmodels/character/inventory_tab.js" type="text/javascript"></script>
+<script src="viewmodels/character/items.js" type="text/javascript"></script>
+<script src="viewmodels/character/magic_items.js" type="text/javascript"></script>
+<script src="viewmodels/character/notes_tab.js" type="text/javascript"></script>
+<script src="viewmodels/character/notes.js" type="text/javascript"></script>
+<script src="viewmodels/character/profile_tab.js" type="text/javascript"></script>
+<script src="viewmodels/character/profile.js" type="text/javascript"></script>
+<script src="viewmodels/character/saving_throws.js" type="text/javascript"></script>
+<script src="viewmodels/character/skills_tab.js" type="text/javascript"></script>
+<script src="viewmodels/character/skills.js" type="text/javascript"></script>
+<script src="viewmodels/character/spell_slots.js" type="text/javascript"></script>
+<script src="viewmodels/character/spell_stats.js" type="text/javascript"></script>
+<script src="viewmodels/character/spells_tab.js" type="text/javascript"></script>
+<script src="viewmodels/character/spells.js" type="text/javascript"></script>
+<script src="viewmodels/character/status_line.js" type="text/javascript"></script>
+<script src="viewmodels/character/stats_tab.js" type="text/javascript"></script>
+<script src="viewmodels/character/stats.js" type="text/javascript"></script>
+<script src="viewmodels/character/treasure.js" type="text/javascript"></script>
+<script src="viewmodels/character/weapons.js" type="text/javascript"></script>
+<script src="viewmodels/common/characters.js" type="text/javascript"></script>
+<script src="viewmodels/common/player_image.js" type="text/javascript"></script>
+<script src="viewmodels/common/root.js" type="text/javascript"></script>
+<script src="viewmodels/common/user_notification.js" type="text/javascript"></script>
+<script src="viewmodels/common/wizard_steps/wizard_ability_scores_step.js" type="text/javascript"></script>
+<script src="viewmodels/common/wizard_steps/wizard_campaign_step.js" type="text/javascript"></script>
+<script src="viewmodels/common/wizard_steps/wizard_player_type_step.js" type="text/javascript"></script>
+<script src="viewmodels/common/wizard_steps/wizard_intro_step.js" type="text/javascript"></script>
+<script src="viewmodels/common/wizard_steps/wizard_profile_step.js" type="text/javascript"></script>
+<script src="viewmodels/common/wizard.js" type="text/javascript"></script>
+<script src="viewmodels/dm/dm_root.js" type="text/javascript"></script>
+<script src="viewmodels/dm/campaign_tab.js" type="text/javascript"></script>
+<script src="viewmodels/dm/overview.js" type="text/javascript"></script>
+<script src="viewmodels/dm/encounter_tab.js" type="text/javascript"></script>
+<script src="viewmodels/dm/encounter.js" type="text/javascript"></script>
+<script src="viewmodels/dm/encounter_cell.js" type="text/javascript"></script>
+<script src="viewmodels/dm/encounter_detail.js" type="text/javascript"></script>
+<script src="viewmodels/dm/encounter_section_visibility.js" type="text/javascript"></script>
+<script src="viewmodels/dm/encounter_sections/environment_section.js" type="text/javascript"></script>
+<script src="viewmodels/dm/encounter_sections/monster_section.js" type="text/javascript"></script>
+<script src="viewmodels/dm/encounter_sections/notes_section.js" type="text/javascript"></script>
+<script src="viewmodels/dm/encounter_sections/npc_section.js" type="text/javascript"></script>
+<script src="viewmodels/dm/encounter_sections/point_of_interest_section.js" type="text/javascript"></script>
+<script src="viewmodels/dm/encounter_sections/player_text_section.js" type="text/javascript"></script>
+<script src="viewmodels/dm/encounter_sections/treasure_section.js" type="text/javascript"></script>
+<!-- Models -->
+<script src="models/character/ability_scores.js" type="text/javascript"></script>
+<script src="models/character/appearance.js" type="text/javascript"></script>
+<script src="models/character/daily_feature.js" type="text/javascript"></script>
+<script src="models/character/death_save.js" type="text/javascript"></script>
+<script src="models/character/feat_traits.js" type="text/javascript"></script>
+<script src="models/character/feats_prof.js" type="text/javascript"></script>
+<script src="models/character/health.js" type="text/javascript"></script>
+<script src="models/character/hit_dice_type.js" type="text/javascript"></script>
+<script src="models/character/hit_dice.js" type="text/javascript"></script>
+<script src="models/character/other_stats.js" type="text/javascript"></script>
+<script src="models/character/profile.js" type="text/javascript"></script>
+<script src="models/character/saving_throws.js" type="text/javascript"></script>
+<script src="models/character/skill.js" type="text/javascript"></script>
+<script src="models/character/spell_slot.js" type="text/javascript"></script>
+<script src="models/character/spell_stats.js" type="text/javascript"></script>
+<script src="models/common/armor.js" type="text/javascript"></script>
+<script src="models/common/character.js" type="text/javascript"></script>
+<script src="models/common/image.js" type="text/javascript"></script>
+<script src="models/common/item.js" type="text/javascript"></script>
+<script src="models/common/magic_item.js" type="text/javascript"></script>
+<script src="models/common/note.js" type="text/javascript"></script>
+<script src="models/common/player_info.js" type="text/javascript"></script>
+<script src="models/common/player_image.js" type="text/javascript"></script>
+<script src="models/common/player_types.js" type="text/javascript"></script>
+<script src="models/common/spell.js" type="text/javascript"></script>
+<script src="models/common/status.js" type="text/javascript"></script>
+<script src="models/common/treasure.js" type="text/javascript"></script>
+<script src="models/common/user_notification.js" type="text/javascript"></script>
+<script src="models/common/weapon.js" type="text/javascript"></script>
+<script src="models/dm/campaign.js" type="text/javascript"></script>
+<script src="models/dm/encounter.js" type="text/javascript"></script>
+<script src="models/dm/encounter_sections/environment_section.js" type="text/javascript"></script>
+<script src="models/dm/encounter_sections/environment.js" type="text/javascript"></script>
+<script src="models/dm/encounter_sections/notes_section.js" type="text/javascript"></script>
+<script src="models/dm/encounter_sections/point_of_interest_section.js" type="text/javascript"></script>
+<script src="models/dm/encounter_sections/point_of_interest.js" type="text/javascript"></script>
+<script src="models/dm/encounter_sections/monster_ability_score.js" type="text/javascript"></script>
+<script src="models/dm/encounter_sections/monster_section.js" type="text/javascript"></script>
+<script src="models/dm/encounter_sections/monster.js" type="text/javascript"></script>
+<script src="models/dm/encounter_sections/npc_section.js" type="text/javascript"></script>
+<script src="models/dm/encounter_sections/npc.js" type="text/javascript"></script>
+<script src="models/dm/encounter_sections/player_text.js" type="text/javascript"></script>
+<script src="models/dm/encounter_sections/player_text_section.js" type="text/javascript"></script>
+<script src="models/dm/encounter_sections/treasure_section.js" type="text/javascript"></script>
+<script src="models/dm/encounter_sections/encounter_armor.js" type="text/javascript"></script>
+<script src="models/dm/encounter_sections/encounter_coins.js" type="text/javascript"></script>
+<script src="models/dm/encounter_sections/encounter_item.js" type="text/javascript"></script>
+<script src="models/dm/encounter_sections/encounter_magic_item.js" type="text/javascript"></script>
+<script src="models/dm/encounter_sections/encounter_weapon.js" type="text/javascript"></script>
+<!-- Migrations -->
+<script src="migrations/110_1_skills.js" type="text/javascript"></script>
+<script src="migrations/110_2_spells.js" type="text/javascript"></script>
+<script src="migrations/110_3_stats.js" type="text/javascript"></script>
+<script src="migrations/120_1_weapons.js" type="text/javascript"></script>
+<!-- Services -->
+<script src="services/hotkeys_service.js" type="text/javascript"></script>
+<script src="services/persistence_service.js" type="text/javascript"></script>
+<script src="services/sort_service.js" type="text/javascript"></script>
+<script src="services/status_service.js" type="text/javascript"></script>
+<script src="services/status_service_components/total_weight_component.js" type="text/javascript"></script>
+<!-- Utilities -->
+<script src="utilities/character_manager.js" type="text/javascript"></script>
+<script src="utilities/notifications.js" type="text/javascript"></script>
+<script src="utilities/fixtures.js" type="text/javascript"></script>
+<script src="utilities/migrations.js" type="text/javascript"></script>
+<script src="utilities/data_repository.js" type="text/javascript"></script>
+<script src="utilities/view_model_utilities.js" type="text/javascript"></script>
+<script src="utilities/convineince.js" type="text/javascript"></script>
+<!-- Components -->
+<script src="components/plus-minus.js" type="text/javascript"></script>
+<script src="components/proficiency-marker.js" type="text/javascript"></script>
+<script src="components/markdown-edit-preview.js" type="text/javascript"></script>
+<script src="components/nested-list.js" type="text/javascript"></script>
+<!-- Settings -->
+<script src="settings.js" type="text/javascript"></script>
+
+<!-- Init -->
+<script src="init.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+	$(function(){
+	  window.viewModel = new AdventurersCodexViewModel();
+    init(window.viewModel);
+	  ko.applyBindings(window.viewModel, $('#html')[0]);
+    //Setup automatic saving.
+    window.onbeforeunload = viewModel.unload;
+	});
+	</script>
+
+	<script type="text/javascript">
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-79735521-1', 'auto');
+    ga('send', 'pageview');
+  </script>
+</body>
 </html>

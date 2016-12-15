@@ -1,7 +1,0 @@
-* [Sonictherocketman](https://github.com/Sonictherocketman)
-* [jkrooskos](https://github.com/jkrooskos)
-* [tanyxp](https://github.com/tanyxp)
-* [macro1](https://github.com/macro1)
-* [nuubduud](https://github.com/nuubduud)
-* [bmolparia](https://github.com/bmolparia)
-* [valterlima](https://github.com/valterlima)
