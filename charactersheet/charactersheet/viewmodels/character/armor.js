@@ -3,6 +3,7 @@
 function ArmorViewModel() {
     var self = this;
 
+    self._dummy = ko.observable(null);
     self.selecteditem = ko.observable();
     self.blankArmor = ko.observable(new Armor());
     self.armors = ko.observableArray([]);
@@ -54,6 +55,112 @@ function ArmorViewModel() {
             });
         }
         return weight + ' (lbs)';
+    });
+
+    self.equipArmorHandler = ko.computed(function() {
+        ko.utils.arrayForEach(self.armors(), function(item) {
+            if(item.armorType() !== 'Shield' && item.armorEquipped() && self.selecteditem() == item) {
+                ko.utils.arrayForEach(self.armors(), function(item2) {
+                    if(item != item2 && item2.armorType() != 'Shield') {
+                        item2.armorEquipped('');
+                    }
+                });
+            } else if(item.armorType() === 'Shield' && item.armorEquipped() && self.selecteditem() == item) {
+                ko.utils.arrayForEach(self.armors(), function(item2) {
+                    if(item != item2 && item2.armorType() == 'Shield') {
+                        item2.armorEquipped('');
+                    }
+                });
+            }
+        });
+    });
+
+    self.shieldEquipped = ko.computed(function() {
+        var shield = ko.utils.arrayFilter(self.armors(), function(item) {
+            return item.armorType() === 'Shield' && item.armorEquipped();
+        });
+        return shield.length === 1;
+    });
+
+    self.baseAC = ko.pureComputed(function() {
+        var ac = 10;
+        var armor = ko.utils.arrayFilter(self.armors(), function(item) {
+            return item.armorType() !== 'Shield' && item.armorEquipped();
+        });
+
+        if(armor.length === 0) {
+            return ac;
+        } else {
+            ac = parseInt(armor[0].armorClass().slice(0, 2));
+        }
+        return ac;
+    })
+
+    self.equippedArmorMagicalModifer = ko.pureComputed(function() {
+        var magicalModifier = 0;
+        var armor = ko.utils.arrayFilter(self.armors(), function(item) {
+            return item.armorType() !== 'Shield' && item.armorEquipped();
+        });
+
+        if(armor.length > 0) {
+            magicalModifier = parseInt(armor[0].armorMagicalModifier());
+        }
+        return magicalModifier;
+    });
+
+    self.equippedShieldMagicalModifer = ko.pureComputed(function() {
+        var magicalModifier = 0;
+        var shield = ko.utils.arrayFilter(self.armors(), function(item) {
+            return item.armorType() === 'Shield' && item.armorEquipped();
+        });
+
+        if(shield.length > 0) {
+            magicalModifier = parseInt(shield[0].armorMagicalModifier());
+        }
+        return magicalModifier;
+    });
+
+    self.dexBonus = function() {
+        var score = AbilityScores.findBy(
+                CharacterManager.activeCharacter().key())[0].modifierFor('Dex');
+
+        return score;
+    };
+
+    self.calculatedAC = ko.pureComputed(function() {
+        self._dummy();
+        var calculatedAC = self.baseAC();
+        var dexBonus = self.dexBonus();
+        var armorMagicalModifier = self.equippedArmorMagicalModifer();
+        var shieldMagicalModifer = self.equippedShieldMagicalModifer();
+
+        if(self.armors().length > 0) {
+            ko.utils.arrayForEach(self.armors(), function(item){
+                if(item.armorEquipped()){
+                    switch(item.armorType()){
+                        case 'Light':
+                            calculatedAC = calculatedAC + armorMagicalModifer + dexBonus;
+                            break;
+                        case 'Medium':
+                            // max dex bonus for medium is 2
+                            if(dexBonus > 2){
+                                var adjDexBonus = 2;
+                            } else {
+                                adjDexBonus = dexBonus;
+                            }
+                            calculatedAC = calculatedAC + armorMagicalModifier + adjDexBonus;
+                            break;
+                        case 'Heavy':
+                            calculatedAC = calculatedAC + armorMagicalModifier + dexBonus;
+                            break;
+                        case 'Shield':
+                            calculatedAC = calculatedAC + shieldMagicalModifer + 2;
+                            break;
+                    }
+                }
+            });
+        }
+        return calculatedAC;
     });
 
     /* Modal Methods */
@@ -152,5 +259,6 @@ function ArmorViewModel() {
         self.armors().forEach(function(e, i, _) {
             e.updateValues();
         });
+        self._dummy.valueHasMutated();
     };
 }
